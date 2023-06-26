@@ -1,29 +1,28 @@
-import React, { useState } from 'react';
-import UserPool from '../../utils/UserPool';
+import React, { useState, useContext } from 'react';
+import { AuthContext } from './AuthProvider';
 
-const Signup = () => {
+const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+
+    const { authenticate } = useContext(AuthContext);
 
     const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
-        UserPool.signUp(
-            email,
-            password,
-            [],
-            [],
-            (err: unknown, data: unknown) => {
-                if (err) console.error(err);
-                console.log(data);
-            }
-        );
+        authenticate(email, password)
+            .then((data: object) => {
+                console.log('Logged in!', data);
+            })
+            .catch((err: object) => {
+                console.error('Failed to login!', err);
+            });
     };
     return (
         <div>
             <form onSubmit={onSubmit}>
                 <h2 className='text-base font-semibold leading-7 text-gray-900'>
-                    Sign Up
+                    Login
                 </h2>
                 <div>
                     <label
@@ -55,11 +54,11 @@ const Signup = () => {
                     type='submit'
                     className='rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50'
                 >
-                    Sign Up
+                    Login
                 </button>
             </form>
         </div>
     );
 };
 
-export default Signup;
+export default Login;
