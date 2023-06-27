@@ -6,10 +6,16 @@ const AuthStatus: React.FC = () => {
     const { getSession, logout } = useContext(AuthContext);
 
     useEffect(() => {
-        getSession().then((session) => {
-            console.log('Session: ', session);
-            setStatus(true);
-        });
+        getSession().then(
+            (session) => {
+                console.log('Session: ', session);
+                setStatus(true);
+            },
+            () => {
+                console.log('No session');
+                setStatus(false);
+            }
+        );
     });
     return (
         <div>

@@ -1,9 +1,11 @@
 import React, { useState, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { AuthContext } from './AuthProvider';
 
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const navigate = useNavigate();
 
     const { authenticate } = useContext(AuthContext);
 
@@ -13,6 +15,7 @@ const Login = () => {
         authenticate(email, password)
             .then((data: object) => {
                 console.log('Logged in!', data);
+                navigate('/dashboard');
             })
             .catch((err: object) => {
                 console.error('Failed to login!', err);

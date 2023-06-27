@@ -1,11 +1,35 @@
 import { Routes, Route } from 'react-router-dom';
-import Home from './pages/Home';
+import LoginPage from './pages/Login';
+import HomePage from './pages/Home';
+import Dashboard from './pages/Dashboard';
+import Upload from './pages/Upload';
+import { AuthProvider } from './components/auth/AuthProvider';
+import RequireAuth from './components/auth/RequireAuth';
 
 function App() {
     return (
-        <Routes>
-            <Route index path='/' element={<Home />} />
-        </Routes>
+        <AuthProvider>
+            <Routes>
+                <Route path='/' element={<HomePage />} />
+                <Route index path='/login' element={<LoginPage />} />
+                <Route
+                    path='/dashboard'
+                    element={
+                        <RequireAuth>
+                            <Dashboard />
+                        </RequireAuth>
+                    }
+                />
+                <Route
+                    path='/upload'
+                    element={
+                        <RequireAuth>
+                            <Upload />
+                        </RequireAuth>
+                    }
+                />
+            </Routes>
+        </AuthProvider>
     );
 }
 
