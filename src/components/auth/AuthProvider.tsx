@@ -1,4 +1,5 @@
 import React, { createContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
     CognitoUser,
     AuthenticationDetails,
@@ -23,6 +24,7 @@ const AuthContext = createContext<AuthContextType>({
 });
 
 const AuthProvider: React.FC<AuthProviderProps> = (props) => {
+    const navigate = useNavigate();
     const getSession = async (): Promise<CognitoUserSession> => {
         return await new Promise<CognitoUserSession>((resolve, reject) => {
             const user = Pool.getCurrentUser();
@@ -73,8 +75,10 @@ const AuthProvider: React.FC<AuthProviderProps> = (props) => {
 
     const logout = () => {
         const user = Pool.getCurrentUser();
+
         if (user) {
             user.signOut();
+            navigate('/');
         }
     };
 
