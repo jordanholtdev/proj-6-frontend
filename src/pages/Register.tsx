@@ -1,8 +1,8 @@
 import React from 'react';
 import MainLayout from '../components/layout/MainLayout';
-import Login from '../components/auth/Login';
+import Signup from '../components/auth/Signup';
 
-const LoginPage: React.FC = () => {
+const RegisterPage: React.FC = () => {
     return (
         <MainLayout>
             <div className='flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8'>
@@ -13,13 +13,13 @@ const LoginPage: React.FC = () => {
                         alt='Your Company'
                     />
                     <h2 className='mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900'>
-                        Sign in to your account
+                        Register to create an account
                     </h2>
                 </div>
-                <Login />
+                <Signup />
             </div>
         </MainLayout>
     );
 };
 
-export default LoginPage;
+export default RegisterPage;
