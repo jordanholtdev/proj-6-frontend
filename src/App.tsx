@@ -3,7 +3,7 @@ import LoginPage from './pages/Login';
 import HomePage from './pages/Home';
 import RegisterPage from './pages/Register';
 import Dashboard from './pages/Dashboard';
-import Upload from './pages/Upload';
+import UploadPage from './pages/Upload';
 import { AuthProvider } from './components/auth/AuthProvider';
 import RequireAuth from './components/auth/RequireAuth';
 
@@ -26,7 +26,7 @@ function App() {
                     path='/upload'
                     element={
                         <RequireAuth>
-                            <Upload />
+                            <UploadPage />
                         </RequireAuth>
                     }
                 />
