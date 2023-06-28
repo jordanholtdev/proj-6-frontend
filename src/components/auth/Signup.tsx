@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import UserPool from '../../utils/UserPool';
 
 const Signup = () => {
@@ -20,11 +21,8 @@ const Signup = () => {
         );
     };
     return (
-        <div>
-            <form onSubmit={onSubmit}>
-                <h2 className='text-base font-semibold leading-7 text-gray-900'>
-                    Sign Up
-                </h2>
+        <div className='mt-10 sm:mx-auto sm:w-full sm:max-w-sm'>
+            <form onSubmit={onSubmit} className='space-y-6'>
                 <div>
                     <label
                         htmlFor='email'
@@ -32,11 +30,13 @@ const Signup = () => {
                     >
                         Email
                     </label>
-                    <input
-                        className='block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6'
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                    />
+                    <div className='mt-2'>
+                        <input
+                            className='block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                        />
+                    </div>
                 </div>
                 <div>
                     <label
@@ -45,18 +45,28 @@ const Signup = () => {
                     >
                         Password
                     </label>
-                    <input
-                        className='block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6'
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                    />
+                    <div className='mt-2'>
+                        <input
+                            className='block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                        />
+                    </div>
                 </div>
-                <button
-                    type='submit'
-                    className='rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50'
-                >
-                    Sign Up
-                </button>
+                <div>
+                    <button
+                        type='submit'
+                        className='flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'
+                    >
+                        Sign Up
+                    </button>
+                </div>
+                <div>
+                    Already have an account?{' '}
+                    <Link to='/login' className='font-medium text-indigo-600'>
+                        Sign in now!
+                    </Link>{' '}
+                </div>
             </form>
         </div>
     );
