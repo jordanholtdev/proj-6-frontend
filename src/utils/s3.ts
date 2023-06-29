@@ -8,6 +8,7 @@ const s3 = new S3({
     },
 });
 
+// main function to be called from the React component
 export const main = async (key: string, file: File, bucketName: string) => {
     const command = new PutObjectCommand({
         Bucket: bucketName,

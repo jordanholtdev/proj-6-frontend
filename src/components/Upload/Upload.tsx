@@ -4,9 +4,67 @@ import { main } from '../../utils/s3';
 const Upload = () => {
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [loading, setLoading] = useState(false);
+    const [s3Key, setS3Key] = useState('');
+
+    const sanitizeFilename = (fileName: string): string => {
+        // remove potentially dangerous characters from the file name
+        const sanitizedFileName = fileName.replace(/[^a-zA-Z0-9-_.]/g, '_');
+
+        // Limit the filename length to 128 characters
+        const maxLength = 128;
+        if (sanitizedFileName.length > maxLength) {
+            const fileNameParts = sanitizedFileName.split('.');
+            const fileExtension = fileNameParts.pop();
+            const fileName = fileNameParts.join('.');
+            const extension = fileExtension ? `.${fileExtension}` : '';
+            return fileName.substr(0, maxLength - extension.length) + extension;
+        }
+        return sanitizedFileName;
+    };
+
+    const generateS3Key = (originalFileName: string, userId: string) => {
+        const uniqueId = Date.now().toString(36); // Generate a unique identifier (timestamp-based in this example)
+        const sanitizedFileName = sanitizeFilename(originalFileName);
+
+        // Combine original file name, unique identifier, and user ID
+        const s3Key = `${sanitizedFileName}_${uniqueId}_${userId}`;
+
+        return s3Key;
+    };
 
     const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0] || null; // Get the selected file
+
+        if (file) {
+            const allowedTypes = ['image/jpeg', 'image/png'];
+            const maxFileSize = 5 * 1024 * 1024; // 5MB
+            const userId = 'user123'; // Replace with the actual authorized user ID
+            const fileNameKey = generateS3Key(file.name, userId);
+            setS3Key(fileNameKey);
+
+            // Validate file type
+            if (!allowedTypes.includes(file.type)) {
+                alert('Only JPEG and PNG images are allowed.');
+                setSelectedFile(null);
+                return;
+            }
+
+            // Validate file size
+            if (file.size > maxFileSize) {
+                alert(
+                    'The selected image exceeds the maximum file size limit of 5MB.'
+                );
+                setSelectedFile(null);
+                return;
+            }
+
+            // Sanitize file name
+            const sanitizedFileName = sanitizeFilename(file.name);
+            const sanitizedFile = new File([file], sanitizedFileName, {
+                type: file.type,
+            });
+            setSelectedFile(sanitizedFile);
+        }
         setSelectedFile(file);
     };
 
@@ -17,7 +75,7 @@ const Upload = () => {
             try {
                 setLoading(true);
                 const response = await main(
-                    'my-file',
+                    s3Key,
                     selectedFile,
                     'images-bucket-project6'
                 );
