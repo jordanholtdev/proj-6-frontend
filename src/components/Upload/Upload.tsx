@@ -3,7 +3,8 @@ import { main } from '../../utils/s3';
 
 const Upload = () => {
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
-    // TODO: Add file upload functionality
+    const [loading, setLoading] = useState(false);
+
     const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0] || null; // Get the selected file
         setSelectedFile(file);
@@ -14,6 +15,7 @@ const Upload = () => {
 
         if (selectedFile) {
             try {
+                setLoading(true);
                 const response = await main(
                     'my-file',
                     selectedFile,
@@ -24,6 +26,8 @@ const Upload = () => {
             } catch (error) {
                 console.log(error);
                 // Handle error
+            } finally {
+                setLoading(false);
             }
         }
     };
@@ -32,6 +36,18 @@ const Upload = () => {
         <div className='max-w-xl'>
             <form onSubmit={handleSubmit}>
                 <label className='flex justify-center w-full h-32 px-4 transition bg-white border-2 border-gray-300 border-dashed rounded-md appearance-none cursor-pointer hover:border-gray-400 focus:outline-none'>
+                    {selectedFile && (
+                        <div>
+                            <p>Selected File: {selectedFile.name}</p>
+                            <button
+                                type='button'
+                                onClick={() => setSelectedFile(null)}
+                                className='px-2 py-1 mt-4 text-white bg-orange-600 rounded-md hover:bg-orange-500'
+                            >
+                                Clear Selection
+                            </button>
+                        </div>
+                    )}
                     <span className='flex items-center space-x-2'>
                         <svg
                             xmlns='http://www.w3.org/2000/svg'
@@ -67,8 +83,11 @@ const Upload = () => {
                         className='px-4 py-2 mt-4 text-white bg-blue-600 rounded-md hover:bg-blue-500'
                         type='submit'
                     >
-                        Submit
+                        {loading ? 'Uploading...' : 'Submit'}{' '}
+                        {/* Display loading text if loading */}
                     </button>
+                    {loading && <span>Loading...</span>}{' '}
+                    {/* Display a loading message or spinner */}
                 </div>
             </form>
         </div>
