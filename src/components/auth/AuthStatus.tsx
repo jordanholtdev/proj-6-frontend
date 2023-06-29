@@ -8,11 +8,9 @@ const AuthStatus: React.FC = () => {
     useEffect(() => {
         getSession().then(
             (session) => {
-                console.log('Session: ', session);
-                setStatus(true);
+                if (session) setStatus(true);
             },
             () => {
-                console.log('No session');
                 setStatus(false);
             }
         );

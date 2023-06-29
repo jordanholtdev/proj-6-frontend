@@ -1,36 +1,34 @@
-import { ChangeEvent, FormEvent, useState } from 'react';
+import { ChangeEvent, FormEvent, useState, useContext, useEffect } from 'react';
 import { main } from '../../utils/s3';
+import { generateS3Key, sanitizeFilename } from './utils';
+import { UploadState } from './types'; // Import the TypeScript types
+import { AuthContext } from '../auth/AuthProvider';
+import { CognitoUserSession } from 'amazon-cognito-identity-js';
 
 const Upload = () => {
-    const [selectedFile, setSelectedFile] = useState<File | null>(null);
-    const [loading, setLoading] = useState(false);
-    const [s3Key, setS3Key] = useState('');
+    const [selectedFile, setSelectedFile] =
+        useState<UploadState['selectedFile']>(null);
+    const [loading, setLoading] = useState<UploadState['loading']>(false);
+    const [s3Key, setS3Key] = useState<UploadState['s3Key']>('');
+    const [userId, setUserId] = useState<UploadState['userId']>('');
+    const { getSession } = useContext(AuthContext);
 
-    const sanitizeFilename = (fileName: string): string => {
-        // remove potentially dangerous characters from the file name
-        const sanitizedFileName = fileName.replace(/[^a-zA-Z0-9-_.]/g, '_');
-
-        // Limit the filename length to 128 characters
-        const maxLength = 128;
-        if (sanitizedFileName.length > maxLength) {
-            const fileNameParts = sanitizedFileName.split('.');
-            const fileExtension = fileNameParts.pop();
-            const fileName = fileNameParts.join('.');
-            const extension = fileExtension ? `.${fileExtension}` : '';
-            return fileName.substr(0, maxLength - extension.length) + extension;
-        }
-        return sanitizedFileName;
-    };
-
-    const generateS3Key = (originalFileName: string, userId: string) => {
-        const uniqueId = Date.now().toString(36); // Generate a unique identifier (timestamp-based in this example)
-        const sanitizedFileName = sanitizeFilename(originalFileName);
-
-        // Combine original file name, unique identifier, and user ID
-        const s3Key = `${sanitizedFileName}_${uniqueId}_${userId}`;
-
-        return s3Key;
-    };
+    useEffect(() => {
+        getSession().then(
+            (session) => {
+                if (session) {
+                    const cognitoUserSession = session as CognitoUserSession;
+                    const cognitoUser = cognitoUserSession
+                        .getIdToken()
+                        .decodePayload();
+                    setUserId(cognitoUser['sub']);
+                }
+            },
+            () => {
+                console.log('No session');
+            }
+        );
+    });
 
     const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0] || null; // Get the selected file
@@ -38,7 +36,6 @@ const Upload = () => {
         if (file) {
             const allowedTypes = ['image/jpeg', 'image/png'];
             const maxFileSize = 5 * 1024 * 1024; // 5MB
-            const userId = 'user123'; // Replace with the actual authorized user ID
             const fileNameKey = generateS3Key(file.name, userId);
             setS3Key(fileNameKey);
 
