@@ -1,5 +1,6 @@
 import { ChangeEvent, FormEvent, useState, useContext, useEffect } from 'react';
 import { main } from '../../utils/s3';
+import { sendSQSMessage } from '../../utils/sqs';
 import { generateS3Key, sanitizeFilename } from './utils';
 import { UploadState } from './types'; // Import the TypeScript types
 import { AuthContext } from '../auth/AuthProvider';
@@ -77,7 +78,14 @@ const Upload = () => {
                     'images-bucket-project6'
                 );
                 console.log(response);
-                // Handle success response
+                // Handle success response, send message to SQS queue with s3Key and userId as message attributes and file name as message body
+                const messageBody = {
+                    s3Key,
+                    userId,
+                    fileName: selectedFile.name,
+                };
+                const sqsResponse = await sendSQSMessage(messageBody);
+                console.log('sqs', sqsResponse);
             } catch (error) {
                 console.log(error);
                 // Handle error
