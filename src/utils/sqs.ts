@@ -22,4 +22,32 @@ const sendSQSMessage = async (message: object) => {
     }
 };
 
-export { sendSQSMessage };
+// function to retrieve messages from SQS queue
+const receiveSQSMessage = async () => {
+    const params = {
+        AttributeNames: ['SentTimestamp'],
+        MaxNumberOfMessages: 10,
+        MessageAttributeNames: ['All'],
+        QueueUrl: import.meta.env.VITE_IMAGE_RESULTS_SQS_QUEUE_URL,
+        VisibilityTimeout: 20,
+        WaitTimeSeconds: 0,
+    };
+
+    try {
+        const data = await sqs.receiveMessage(params);
+        if (data.Messages) {
+            const deleteParams = {
+                QueueUrl: import.meta.env.VITE_IMAGE_RESULTS_SQS_QUEUE_URL,
+                ReceiptHandle: data.Messages[0].ReceiptHandle,
+            };
+            await sqs.deleteMessage(deleteParams);
+            console.log('Success', data.Messages[0].Body);
+        } else {
+            console.log('No messages to delete');
+        }
+    } catch (error) {
+        console.log('Error', error);
+    }
+};
+
+export { sendSQSMessage, receiveSQSMessage };
