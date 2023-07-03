@@ -16,10 +16,12 @@ export const sanitizeFilename = (fileName: string): string => {
 
 export const generateS3Key = (originalFileName: string, userId: string) => {
     const uniqueId = Date.now().toString(36); // Generate a unique identifier (timestamp-based in this example)
+    const randomString = Math.random().toString(36).substring(2);
+    const uniqueIdWithRandomString = uniqueId + randomString;
     const sanitizedFileName = sanitizeFilename(originalFileName);
 
     // Combine original file name, unique identifier, and user ID
-    const s3Key = `${sanitizedFileName}_${uniqueId}_${userId}`;
+    const s3Key = `${sanitizedFileName}_${uniqueIdWithRandomString}_${userId}`;
 
     return s3Key;
 };
