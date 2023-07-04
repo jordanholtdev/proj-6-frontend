@@ -13,8 +13,8 @@ const Login = () => {
         event.preventDefault();
 
         authenticate(email, password)
-            .then((data: object) => {
-                console.log('Logged in!', data);
+            .then(() => {
+                console.log('Logged in!');
                 navigate('/dashboard');
             })
             .catch((err: object) => {

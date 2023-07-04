@@ -16,7 +16,7 @@ const sendSQSMessage = async (message: object) => {
 
     try {
         const data = await sqs.sendMessage(params);
-        console.log('Success', data.MessageId);
+        console.log('SQS Message Sent', data.MessageId);
     } catch (error) {
         console.log('Error', error);
     }
@@ -36,8 +36,6 @@ const receiveSQSMessage = async (): Promise<string[] | null> => {
     try {
         const data = await sqs.receiveMessage(params);
         if (data.Messages) {
-            console.log('Success', data.Messages[0].Body);
-
             // Extract and filter out any undefined messages
             const messages = data.Messages.map(
                 (message) => message.Body
