@@ -82,10 +82,12 @@ const Upload = () => {
                 console.log(response);
                 // Handle success response, send message to SQS queue with s3Key and userId as message attributes and file name as message body
                 const messageBody = {
-                    s3Key,
-                    userId,
+                    bucket: 'images-bucket-project6',
+                    key: s3Key,
+                    userId: userId,
                     fileName: selectedFile.name,
                 };
+                console.log('message:', messageBody);
                 const sqsResponse = await sendSQSMessage(messageBody);
                 console.log('sqs', sqsResponse);
                 setSuccess(true);

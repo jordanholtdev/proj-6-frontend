@@ -1,7 +1,7 @@
 import React from 'react';
 import MainLayout from '../components/layout/MainLayout';
 import AuthLayout from '../components/layout/AuthLayout';
-import Upload from '../components/Upload/Upload';
+import Upload from '../components/upload/Upload';
 
 const UploadPage: React.FC = () => {
     return (

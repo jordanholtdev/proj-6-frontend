@@ -1,6 +1,7 @@
 import React from 'react';
 import MainLayout from '../components/layout/MainLayout';
 import AuthLayout from '../components/layout/AuthLayout';
+import RetrieveSQS from '../components/retrieve/RetrieveSQS';
 
 const ImagesPage: React.FC = () => {
     return (
@@ -18,7 +19,7 @@ const ImagesPage: React.FC = () => {
                         </p>
                     </div>
                     <div className='mt-10 sm:mx-auto sm:w-full sm:max-w-sm'>
-                        {/* component */}
+                        <RetrieveSQS />
                     </div>
                 </div>
             </AuthLayout>
