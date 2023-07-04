@@ -4,6 +4,7 @@ import HomePage from './pages/Home';
 import RegisterPage from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import UploadPage from './pages/Upload';
+import ImagesPage from './pages/Images';
 import { AuthProvider } from './components/auth/AuthProvider';
 import RequireAuth from './components/auth/RequireAuth';
 
@@ -27,6 +28,14 @@ function App() {
                     element={
                         <RequireAuth>
                             <UploadPage />
+                        </RequireAuth>
+                    }
+                />
+                <Route
+                    path='/images'
+                    element={
+                        <RequireAuth>
+                            <ImagesPage />
                         </RequireAuth>
                     }
                 />
