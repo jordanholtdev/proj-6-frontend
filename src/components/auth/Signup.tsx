@@ -9,16 +9,9 @@ const Signup = () => {
     const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
-        UserPool.signUp(
-            email,
-            password,
-            [],
-            [],
-            (err: unknown, data: unknown) => {
-                if (err) console.error(err);
-                console.log(data);
-            }
-        );
+        UserPool.signUp(email, password, [], [], (err: unknown) => {
+            if (err) console.error(err);
+        });
     };
     return (
         <div className='mt-10 sm:mx-auto sm:w-full sm:max-w-sm'>
