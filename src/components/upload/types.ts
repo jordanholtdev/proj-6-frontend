@@ -3,4 +3,5 @@ export interface UploadState {
     loading: boolean;
     s3Key: string;
     userId: string;
+    success: boolean;
 }

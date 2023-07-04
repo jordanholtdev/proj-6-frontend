@@ -12,6 +12,7 @@ const Upload = () => {
     const [loading, setLoading] = useState<UploadState['loading']>(false);
     const [s3Key, setS3Key] = useState<UploadState['s3Key']>('');
     const [userId, setUserId] = useState<UploadState['userId']>('');
+    const [success, setSuccess] = useState<UploadState['success']>(false);
     const { getSession } = useContext(AuthContext);
 
     useEffect(() => {
@@ -32,6 +33,7 @@ const Upload = () => {
     });
 
     const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
+        setSuccess(false);
         const file = event.target.files?.[0] || null; // Get the selected file
 
         if (file) {
@@ -80,12 +82,15 @@ const Upload = () => {
                 console.log(response);
                 // Handle success response, send message to SQS queue with s3Key and userId as message attributes and file name as message body
                 const messageBody = {
-                    s3Key,
-                    userId,
+                    bucket: 'images-bucket-project6',
+                    key: s3Key,
+                    userId: userId,
                     fileName: selectedFile.name,
                 };
+                console.log('message:', messageBody);
                 const sqsResponse = await sendSQSMessage(messageBody);
                 console.log('sqs', sqsResponse);
+                setSuccess(true);
             } catch (error) {
                 console.log(error);
                 // Handle error
@@ -153,6 +158,7 @@ const Upload = () => {
                     {/* Display a loading message or spinner */}
                 </div>
             </form>
+            <div>{success && <p>Upload successful and message sent!</p>}</div>
         </div>
     );
 };

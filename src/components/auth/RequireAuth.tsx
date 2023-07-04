@@ -10,8 +10,7 @@ function RequireAuth({ children }: { children: JSX.Element }) {
 
     useEffect(() => {
         getSession()
-            .then((session) => {
-                console.log('Session: ', session);
+            .then(() => {
                 setIsAuthenticated(true);
             })
             .catch(() => {
