@@ -1,8 +1,32 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import MainLayout from '../components/layout/MainLayout';
+import { AuthContext } from '../components/auth/AuthProvider';
 
 const HomePage: React.FC = () => {
+    const [isLoggedIn, setIsloggedIn] = useState(false);
+    const { getSession } = React.useContext(AuthContext);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        getSession().then(
+            (session) => {
+                if (session) setIsloggedIn(true);
+            },
+            () => {
+                setIsloggedIn(false);
+            }
+        );
+    });
+
+    const handleRedirect = () => {
+        if (isLoggedIn) {
+            navigate('/dashboard');
+        } else {
+            navigate('/login');
+        }
+    };
+
     return (
         <MainLayout>
             <div className='text-center'>
@@ -16,12 +40,12 @@ const HomePage: React.FC = () => {
                 </p>
             </div>
             <div className='text-center py-12'>
-                <Link
-                    to='/login'
+                <button
+                    onClick={handleRedirect}
                     className='rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'
                 >
                     Get Started
-                </Link>
+                </button>
             </div>
         </MainLayout>
     );

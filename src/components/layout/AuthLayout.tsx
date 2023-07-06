@@ -1,11 +1,12 @@
 import React from 'react';
-import AuthStatus from '../auth/AuthStatus';
+import Nav from '../common/Nav';
 import { AuthLayoutProps } from './types';
 
 const AuthLayout: React.FC<AuthLayoutProps> = ({ children }) => {
     return (
         <div>
-            <AuthStatus />
+            <Nav />
+
             {children}
         </div>
     );
