@@ -1,6 +1,7 @@
 import React from 'react';
 import MainLayout from '../components/layout/MainLayout';
 import AuthLayout from '../components/layout/AuthLayout';
+import ChangePassword from '../components/auth/ChangePassword';
 
 const Dashboard: React.FC = () => {
     return (
@@ -16,10 +17,20 @@ const Dashboard: React.FC = () => {
                             </div>
                         </header>
                         <p className='mt-6 text-lg leading-8 text-gray-600'>
-                            Anim aute id magna aliqua ad ad non deserunt sunt.
-                            Qui irure qui lorem cupidatat commodo. Elit sunt
-                            amet fugiat veniam occaecat fugiat aliqua.
+                            You can update your account's password for enhanced
+                            security below. Changing your password regularly is
+                            a good practice to protect your personal
+                            information. Simply follow the steps below to update
+                            your password:
                         </p>
+                        <ol className='mt-6 text-lg leading-8 text-gray-600 list-decimal list-inside'>
+                            <li> Enter your current password.</li>
+                            <li> Enter your new password.</li>
+                            <li> Click the "Change Password" button.</li>
+                        </ol>
+                        <div>
+                            <ChangePassword />
+                        </div>
                     </div>
                 </div>
             </AuthLayout>
