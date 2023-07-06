@@ -17,8 +17,7 @@ const AuthStatus: React.FC = () => {
     });
     return (
         <div>
-            <h2>Status</h2>
-            <p>
+            <div>
                 {status ? (
                     <button
                         onClick={logout}
@@ -29,7 +28,7 @@ const AuthStatus: React.FC = () => {
                 ) : (
                     'Please login'
                 )}
-            </p>
+            </div>
         </div>
     );
 };
