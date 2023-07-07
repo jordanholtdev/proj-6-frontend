@@ -1,10 +1,12 @@
 import { ChangeEvent, FormEvent, useState, useContext, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { main } from '../../utils/s3';
 import { sendSQSMessage } from '../../utils/sqs';
 import { generateS3Key, sanitizeFilename } from './utils';
 import { UploadState } from './types'; // Import the TypeScript types
 import { AuthContext } from '../auth/AuthProvider';
 import { CognitoUserSession } from 'amazon-cognito-identity-js';
+import { Dialog } from '@headlessui/react';
 
 const Upload = () => {
     const [selectedFile, setSelectedFile] =
@@ -14,6 +16,7 @@ const Upload = () => {
     const [userId, setUserId] = useState<UploadState['userId']>('');
     const [success, setSuccess] = useState<UploadState['success']>(false);
     const { getSession } = useContext(AuthContext);
+    const navigate = useNavigate();
 
     useEffect(() => {
         getSession().then(
@@ -158,7 +161,34 @@ const Upload = () => {
                     {/* Display a loading message or spinner */}
                 </div>
             </form>
-            <div>{success && <p>Upload successful and message sent!</p>}</div>
+            <Dialog open={success} onClose={() => setSuccess(false)}>
+                <div className='fixed inset-0 bg-black/60' aria-hidden='true' />
+                <div className='fixed inset-0 flex items-center justify-center p-4'>
+                    <Dialog.Panel className='bg-slate-200 p-8 rounded-md'>
+                        <Dialog.Title className='text-green-700 text-xl'>
+                            Success!
+                        </Dialog.Title>
+                        <Dialog.Description>
+                            Your image was uploaded successfully.
+                        </Dialog.Description>
+                        <p className='py-2'>
+                            To view your image click{' '}
+                            <button
+                                className='text-blue-600 underline'
+                                onClick={() => navigate('/images')}
+                            >
+                                here
+                            </button>{' '}
+                        </p>
+                        <button
+                            className='text-gray-600'
+                            onClick={() => setSuccess(false)}
+                        >
+                            Close
+                        </button>
+                    </Dialog.Panel>
+                </div>
+            </Dialog>
         </div>
     );
 };
