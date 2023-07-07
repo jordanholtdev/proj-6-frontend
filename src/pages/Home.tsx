@@ -29,7 +29,7 @@ const HomePage: React.FC = () => {
 
     return (
         <MainLayout>
-            <div className='text-center'>
+            <div className='text-center py-20'>
                 <h1 className='text-2xl font-bold tracking-tight text-gray-900 sm:text-6xl'>
                     Distributed Image Processing application.
                 </h1>
