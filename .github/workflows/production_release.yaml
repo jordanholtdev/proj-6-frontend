@@ -50,10 +50,10 @@ jobs:
                   gh auth login --with-token ${{ secrets.GH_TOKEN }}
                   gh repo create ${{ github.repository }} --ref "${{ steps.next_version_main.outputs.next_version }}" --tags
               env:
-                  GH_TOKEN: ${{ secrets.GH_TOKEN }}
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
             - name: Create release on main branch
               run: |
                   gh release create "${{ steps.next_version_main.outputs.next_version }}" --generate-notes --target main
               env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
