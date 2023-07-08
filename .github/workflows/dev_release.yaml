@@ -36,11 +36,11 @@ jobs:
               run: git merge "${{ github.event.head_commit.id }}"
 
             - name: Create annotated tag on dev branch
-              run: git tag -a "${{ steps.next_version_dev.outputs.next_version }}-dev" -m "$(git log --pretty=format:'- %s' "$(git describe --abbrev=0 --tags dev)...HEAD" --no-merges)"
+              run: git tag -a "${{ steps.next_version_dev.outputs.next_version }}-dev" -m "${{ steps.next_version_dev.outputs.next_version }}"
 
             - name: Push annotated tag to remote
               run: git push origin "${{ steps.next_version_dev.outputs.next_version }}-dev"
 
             - name: Create release on dev branch
               run: |
-                  gh release create "${{ steps.next_version_dev.outputs.next_version }}-dev" --notes "$(git log --pretty=format:'- %s' "$(git describe --abbrev=0 --tags dev)...HEAD" --no-merges)" --target dev
+                  gh release create "${{ steps.next_version_dev.outputs.next_version }}-dev" --generate-notes --target dev
