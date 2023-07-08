@@ -29,8 +29,9 @@ jobs:
             - name: Calculate next version
               id: next_version_dev
               run: |
+                  cd ${{ github.workspace }}  # Change to the repository's working directory
                   chmod +x calculate_next_version.sh
-                  next_version=$(./calculate_next_version.sh dev)
+                  next_version=$(./calculate_next_version.sh ${{ github.ref }})
                   echo "::set-output name=next_version::${next_version}"
               env:
                   VERSIONING_STRATEGY: ${{ github.event.inputs.versioning_strategy }}
@@ -39,6 +40,9 @@ jobs:
               run: |
                   git config user.email "${{ github.actor }}@users.noreply.github.com"
                   git config user.name "${{ github.actor }}"
+
+            - name: Show existing tags
+              run: git tag
 
             - name: Create annotated tag on dev branch
               run: |
