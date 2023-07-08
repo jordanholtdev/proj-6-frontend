@@ -46,7 +46,7 @@ jobs:
 
             - name: Create annotated tag on dev branch
               run: |
-                  git tag -a "dev-${{ steps.next_version_dev.outputs.next_version }}" -m "${{ steps.next_version_dev.outputs.next_version }}"
+                  git tag -a "${{ steps.next_version_dev.outputs.next_version }}" -m "${{ steps.next_version_dev.outputs.next_version }}"
                   git tag  # Add this line to show existing tags in the log
 
             - name: Push annotated tag to remote
