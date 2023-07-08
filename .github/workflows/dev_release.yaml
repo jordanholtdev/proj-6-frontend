@@ -1,9 +1,11 @@
-name: Dev Release on Merge to Dev
+name: Dev Release
 
 on:
-    push:
-        branches:
-            - 'dev'
+    workflow_dispatch:
+        inputs:
+            versioning_strategy:
+                description: 'Versioning strategy: major, minor, patch'
+                required: true
 
 jobs:
     release:
@@ -22,15 +24,15 @@ jobs:
               run: npm install -g gh
 
             - name: Set VERSIONING_STRATEGY
-              run: echo "VERSIONING_STRATEGY=minor" >> $GITHUB_ENV
+              run: echo "VERSIONING_STRATEGY=${{ github.event.inputs.versioning_strategy }}" >> $GITHUB_ENV
 
-            - name: Run calculate_next_version.sh for dev branch
+            - name: Calculate next version
               id: next_version_dev
               run: |
                   chmod +x calculate_next_version.sh
-                  export VERSIONING_STRATEGY=minor
-                  next_version=$(./calculate_next_version.sh dev)
-                  echo "::set-output name=next_version::$next_version"
+                  ./calculate_next_version.sh dev
+              env:
+                  VERSIONING_STRATEGY: ${{ github.event.inputs.versioning_strategy }}
 
             - name: Set Git committer identity
               run: |
