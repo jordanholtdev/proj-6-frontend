@@ -47,12 +47,10 @@ jobs:
 
             - name: Push annotated tag to remote
               run: |
+                  echo ${{ secrets.GITHUB_TOKEN }} | gh auth login --with-token
                   gh repo create ${{ github.repository }} --ref "${{ steps.next_version_main.outputs.next_version }}" --tags
-              env:
-                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
             - name: Create release on main branch
               run: |
+                  echo ${{ secrets.GITHUB_TOKEN }} | gh auth login --with-token
                   gh release create "${{ steps.next_version_main.outputs.next_version }}" --generate-notes --target main
-              env:
-                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
