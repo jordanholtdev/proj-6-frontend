@@ -41,10 +41,14 @@ jobs:
                   git config user.name "${{ github.actor }}"
 
             - name: Create annotated tag on dev branch
-              run: git tag -a "dev-${{ steps.next_version_dev.outputs.next_version }}" -m "${{ steps.next_version_dev.outputs.next_version }}"
+              run: |
+                  git tag -a "dev-${{ steps.next_version_dev.outputs.next_version }}" -m "${{ steps.next_version_dev.outputs.next_version }}"
+                  git tag  # Add this line to show existing tags in the log
 
             - name: Push annotated tag to remote
-              run: git push origin "refs/tags/${{ steps.next_version_dev.outputs.next_version }}"
+              run: |
+                  git push origin "refs/tags/${{ steps.next_version_dev.outputs.next_version }}"
+                  git ls-remote --tags origin  # Add this line to show remote tags in the log
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
