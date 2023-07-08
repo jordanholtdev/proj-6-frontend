@@ -44,7 +44,7 @@ jobs:
               run: git tag -a "dev-${{ steps.next_version_dev.outputs.next_version }}" -m "${{ steps.next_version_dev.outputs.next_version }}"
 
             - name: Push annotated tag to remote
-              run: git push origin "${{ steps.next_version_dev.outputs.next_version }}-dev"
+              run: git push origin "refs/tags/dev-${{ steps.next_version_dev.outputs.next_version }}"
 
             - name: Create release on dev branch
               run: |
