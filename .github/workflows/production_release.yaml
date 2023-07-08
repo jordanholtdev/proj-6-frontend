@@ -30,7 +30,8 @@ jobs:
               id: next_version_main
               run: |
                   chmod +x calculate_next_version.sh
-                  ./calculate_next_version.sh main
+                  next_version=$(./calculate_next_version.sh main)
+                  echo "::set-output name=next_version::${next_version}"
               env:
                   VERSIONING_STRATEGY: ${{ github.event.inputs.versioning_strategy }}
 
