@@ -10,3 +10,9 @@ export type AuthContextType = {
     getSession: () => Promise<object>;
     logout: () => void;
 };
+
+export interface CustomError {
+    code?: string;
+    message?: string;
+    // Add other properties if necessary
+}
