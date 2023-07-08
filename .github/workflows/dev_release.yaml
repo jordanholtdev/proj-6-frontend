@@ -46,7 +46,7 @@ jobs:
             - name: Push annotated tag to remote
               run: git push origin "refs/tags/dev-${{ steps.next_version_dev.outputs.next_version }}"
               env:
-                  GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
             - name: Create release on dev branch
               run: |
