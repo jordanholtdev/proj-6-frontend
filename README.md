@@ -46,4 +46,4 @@ Using [SemVer](http://semver.org/) for versioning. For the versions available, s
 
 ## License
 
-This project is licensed under the MIT License.
+This project is licensed under the MIT License..
