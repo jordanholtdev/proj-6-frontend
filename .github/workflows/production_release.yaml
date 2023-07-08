@@ -46,7 +46,9 @@ jobs:
                   git tag  # Add this line to show existing tags in the log
 
             - name: Push annotated tag to remote
-              run: gh repo create ${{ github.repository }} --ref "refs/tags/prod-${{ steps.next_version_main.outputs.next_version }}" --tags
+              run: |
+                  git push origin "refs/tags/${{ steps.next_version_main.outputs.next_version }}"
+                  git ls-remote --tags origin  # Add this line to show remote tags in the log
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
