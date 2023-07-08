@@ -46,7 +46,4 @@ fi
 # Set the next version
 next_version="${branch}-${major}.${minor}.${patch}"
 
-# Print the value of next_version
-echo "Next version: $next_version"
-
 echo "$next_version"
