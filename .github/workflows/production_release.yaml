@@ -1,0 +1,46 @@
+name: Production Release on Merge to Main
+
+on:
+    push:
+        branches:
+            - 'main'
+
+jobs:
+    release:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v2
+
+            - name: Set up Node.js
+              uses: actions/setup-node@v2
+              with:
+                  node-version: '14'
+
+            - name: Install dependencies
+              run: npm install -g gh
+
+            - name: Set VERSIONING_STRATEGY
+              run: echo "VERSIONING_STRATEGY=patch" >> $GITHUB_ENV
+
+            - name: Run calculate_next_version.sh for main branch
+              id: next_version_main
+              run: |
+                  chmod +x calculate_next_version.sh
+                  export VERSIONING_STRATEGY=patch
+                  next_version=$(./calculate_next_version.sh main)
+                  echo "::set-output name=next_version::$next_version"
+
+            - name: Merge dev branch into main
+              run: git merge dev
+
+            - name: Create annotated tag for production release
+              run: git tag -a "${{ steps.next_version_main.outputs.next_version }}" -m "$(git log --pretty=format:'- %s' "$(git describe --abbrev=0 --tags main)...HEAD" --no-merges)"
+
+            - name: Push annotated tag to remote
+              run: git push origin "${{ steps.next_version_main.outputs.next_version }}"
+
+            - name: Create release on main branch
+              run: |
+                  gh release create "${{ steps.next_version_main.outputs.next_version }}" --notes "$(git log --pretty=format:'- %s' "$(git describe --abbrev=0 --tags main)...HEAD" --no-merges)" --target main
