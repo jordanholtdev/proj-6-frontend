@@ -5,9 +5,19 @@ branch=$1
 latest_tag=$(git describe --tags --abbrev=0 $(git rev-list --tags --max-count=1 --skip=1 "$branch"))
 
 # Extract the major, minor and patch versions from the tag
-major=$(echo $latest_tag | cut -d. -f1)
-minor=$(echo $latest_tag | cut -d. -f2)
-patch=$(echo $latest_tag | cut -d. -f3)
+# Extract the major, minor, and patch versions from the tag
+if [[ -n "$latest_tag" ]]; then
+  tag_parts=(${latest_tag//-/ })
+  version_part=${tag_parts[1]}
+  version_parts=(${version_part//./ })
+  major=${version_parts[0]}
+  minor=${version_parts[1]}
+  patch=${version_parts[2]}
+else
+  major=0
+  minor=0
+  patch=0
+fi
 
 # Determine the next version based on the versioning strategy
 # If the strategy is "major", increment the major version
