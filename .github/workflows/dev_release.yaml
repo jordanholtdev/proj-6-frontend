@@ -1,4 +1,4 @@
-name: Release on Merge to Dev
+name: Dev Release on Merge to Dev
 
 on:
     push:
@@ -21,7 +21,26 @@ jobs:
             - name: Install dependencies
               run: npm install -g gh
 
-            - name: Run release script
+            - name: Set VERSIONING_STRATEGY
+              run: echo "VERSIONING_STRATEGY=minor" >> $GITHUB_ENV
+
+            - name: Run calculate_next_version.sh for dev branch
+              id: next_version_dev
               run: |
-                  chmod +x release.sh
-                  ./release.sh "${{ github.event.head_commit.id }}"
+                  chmod +x calculate_next_version.sh
+                  export VERSIONING_STRATEGY=minor
+                  next_version=$(./calculate_next_version.sh dev)
+                  echo "::set-output name=next_version::$next_version"
+
+            - name: Merge feature branch into dev
+              run: git merge "${{ github.event.head_commit.id }}"
+
+            - name: Create annotated tag on dev branch
+              run: git tag -a "${{ steps.next_version_dev.outputs.next_version }}-dev" -m "$(git log --pretty=format:'- %s' "$(git describe --abbrev=0 --tags dev)...HEAD" --no-merges)"
+
+            - name: Push annotated tag to remote
+              run: git push origin "${{ steps.next_version_dev.outputs.next_version }}-dev"
+
+            - name: Create release on dev branch
+              run: |
+                  gh release create "${{ steps.next_version_dev.outputs.next_version }}-dev" --notes "$(git log --pretty=format:'- %s' "$(git describe --abbrev=0 --tags dev)...HEAD" --no-merges)" --target dev
