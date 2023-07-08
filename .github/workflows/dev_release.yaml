@@ -1,0 +1,55 @@
+name: Dev Release
+
+on:
+    workflow_dispatch:
+        inputs:
+            versioning_strategy:
+                description: 'Versioning strategy: major, minor, patch'
+                required: true
+
+jobs:
+    release:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v2
+
+            - name: Set up Node.js
+              uses: actions/setup-node@v2
+              with:
+                  node-version: '16'
+
+            - name: Install dependencies
+              run: npm install -g gh
+
+            - name: Set VERSIONING_STRATEGY
+              run: echo "VERSIONING_STRATEGY=${{ github.event.inputs.versioning_strategy }}" >> $GITHUB_ENV
+
+            - name: Calculate next version
+              id: next_version_dev
+              run: |
+                  chmod +x calculate_next_version.sh
+                  ./calculate_next_version.sh dev
+              env:
+                  VERSIONING_STRATEGY: ${{ github.event.inputs.versioning_strategy }}
+
+            - name: Set Git committer identity
+              run: |
+                  git config user.email "${{ github.actor }}@users.noreply.github.com"
+                  git config user.name "${{ github.actor }}"
+
+            - name: Merge feature branch into dev
+              run: git merge "${{ github.event.head_commit.id }}"
+
+            - name: Create annotated tag on dev branch
+              run: git tag -a "dev-${{ steps.next_version_dev.outputs.next_version }}" -m "${{ steps.next_version_dev.outputs.next_version }}"
+
+            - name: Push annotated tag to remote
+              run: git push origin "refs/tags/dev-${{ steps.next_version_dev.outputs.next_version }}"
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Create release on dev branch
+              run: |
+                  gh release create "${{ steps.next_version_dev.outputs.next_version }}-dev" --generate-notes --target dev
