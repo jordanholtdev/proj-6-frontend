@@ -4,18 +4,37 @@ import { CustomError } from './types';
 export const getErrorMessage = (error: CustomError) => {
     console.log(error);
 
-    // if error is a NotAuthorizedException error (thrown by Cognito) return the error message
-    if ('code' in error && error.code === 'NotAuthorizedException') {
-        console.log(error['message']);
-        return error['message'];
-    } else {
-        // if error is an InvalidParameterException error (thrown by Cognito) return the error message
-        if ('code' in error && error.code === 'InvalidParameterException') {
-            console.log(error['message']);
-            return error['message'];
-        } else {
-            // if error is not a NotAuthorizedException or InvalidParameterException error, return a generic error message
-            return 'An error has occurred. Please try again.';
+    // switch statement that returns the error message based on the error code
+    switch (error.code) {
+        case 'UserNotFoundException': {
+            return 'User does not exist.';
+        }
+        case 'NotAuthorizedException': {
+            return 'Incorrect username or password.';
+        }
+        case 'UsernameExistsException': {
+            return 'Username already exists.';
+        }
+        case 'InvalidPasswordException': {
+            return 'Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number and one special character.';
+        }
+        case 'InvalidParameterException': {
+            return 'Username must be a valid email address.';
+        }
+        case 'CodeMismatchException': {
+            return 'Invalid verification code provided, please try again.';
+        }
+        case 'ExpiredCodeException': {
+            return 'Verification code has expired, please request a new one.';
+        }
+        case 'LimitExceededException': {
+            return 'Attempt limit exceeded, please try again later.';
+        }
+        case 'UserNotConfirmedException': {
+            return 'User is not confirmed. Please confirm your account.';
+        }
+        default: {
+            return 'An error has occurred.';
         }
     }
 };
