@@ -2,7 +2,7 @@
 
 # Get the latest tag from the specified branch
 branch=$1
-latest_tag=$(git describe --tags --abbrev=0 --match "${branch}-*" 2>/dev/null)
+latest_tag=$(git describe --tags --abbrev=0 --match "${branch}-*" "$(git rev-parse --abbrev-ref HEAD)" 2>/dev/null)
 
 # Extract the major, minor and patch versions from the tag
 # Extract the major, minor, and patch versions from the tag
