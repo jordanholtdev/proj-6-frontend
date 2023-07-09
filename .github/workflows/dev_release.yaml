@@ -29,7 +29,6 @@ jobs:
             - name: Calculate next version
               id: next_version_dev
               run: |
-                  cd ${{ github.workspace }}  # Change to the repository's working directory
                   chmod +x calculate_next_version.sh
                   next_version=$(./calculate_next_version.sh dev)
                   echo "::set-output name=next_version::${next_version}"
