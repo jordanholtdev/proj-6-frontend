@@ -1,10 +1,12 @@
 import React, { useState, useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from './AuthProvider';
+import { getErrorMessage } from './utils';
 
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [error, setError] = useState<null | string>(null);
     const navigate = useNavigate();
 
     const { authenticate } = useContext(AuthContext);
@@ -19,6 +21,8 @@ const Login = () => {
             })
             .catch((err: object) => {
                 console.error('Failed to login!', err);
+                const processedError = getErrorMessage(err);
+                setError(processedError || 'Failed to login!');
             });
     };
     return (
@@ -53,6 +57,11 @@ const Login = () => {
                             onChange={(e) => setPassword(e.target.value)}
                         />
                     </div>
+                    {error && ( // 👈
+                        <div className='mt-2 text-sm text-red-600'>
+                            {error} {/* 👈  */}
+                        </div>
+                    )}
                 </div>
                 <div>
                     <button

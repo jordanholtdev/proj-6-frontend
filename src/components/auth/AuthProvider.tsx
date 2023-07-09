@@ -58,15 +58,14 @@ const AuthProvider: React.FC<AuthProviderProps> = (props) => {
 
             user.authenticateUser(authDetails, {
                 onSuccess: (data) => {
-                    console.log('onSuccess:', data);
                     resolve(data);
                 },
                 onFailure: (err) => {
-                    console.error('onFailure:', err);
+                    console.error('onFailure:');
                     reject(err);
                 },
                 newPasswordRequired: (data) => {
-                    console.log('newPasswordRequired:', data);
+                    console.log('newPasswordRequired:');
                     resolve(data);
                 },
             });
