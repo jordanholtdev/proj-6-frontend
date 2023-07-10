@@ -24,6 +24,7 @@ const sendSQSMessage = async (message: object) => {
 
 // function to retrieve messages from SQS queue
 const receiveSQSMessage = async (): Promise<string[] | null> => {
+    console.log('Receiving messages from SQS queue');
     const params = {
         AttributeNames: ['SentTimestamp'],
         MaxNumberOfMessages: 10,
