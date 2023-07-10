@@ -29,7 +29,7 @@ const ImagesPage: React.FC = () => {
                             of image recognition.
                         </p>
                     </div>
-                    <div className='mt-10 sm:mx-auto sm:w-full sm:max-w-sm'>
+                    <div>
                         <RetrieveSQS />
                     </div>
                 </div>
