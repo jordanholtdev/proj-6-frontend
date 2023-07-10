@@ -2,7 +2,7 @@
 
 # Get the latest tag from the specified branch
 branch=$1
-latest_tag=$(git describe --tags --abbrev=0 --match "${branch}-*" "$(git rev-parse --abbrev-ref HEAD)" 2>/dev/null)
+latest_tag=$(git tag --list "${branch}-*" | sort -V | tail -n1)
 
 # Extract the major, minor and patch versions from the tag
 # Extract the major, minor, and patch versions from the tag
@@ -46,4 +46,4 @@ fi
 # Set the next version
 next_version="${branch}-${major}.${minor}.${patch}"
 
-echo "::set-output name=next_version::${next_version}"
+echo $next_version
