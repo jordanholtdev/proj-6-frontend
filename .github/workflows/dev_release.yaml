@@ -30,8 +30,8 @@ jobs:
               id: next_version_dev
               run: |
                   chmod +x calculate_next_version.sh
-                  next_version=$(./calculate_next_version.sh dev)
-                  echo "::set-output name=next_version::${next_version}"
+                  NEXT_VERSION=$(./calculate_next_version.sh dev)
+                  echo "NEXT_VERSION=${NEXT_VERSION}" >> $GITHUB_ENV
               env:
                   VERSIONING_STRATEGY: ${{ github.event.inputs.versioning_strategy }}
 
@@ -45,12 +45,12 @@ jobs:
 
             - name: Create annotated tag on dev branch
               run: |
-                  git tag -a "${{ steps.next_version_dev.outputs.next_version }}" -m "${{ steps.next_version_dev.outputs.next_version }}"
+                  git tag -a "${{ env.NEXT_VERSION }}" -m "${{ env.NEXT_VERSION }}"
                   git tag  # Add this line to show existing tags in the log
 
             - name: Push annotated tag to remote
               run: |
-                  git push origin "${{ steps.next_version_dev.outputs.next_version }}"
+                  git push origin "refs/tags/${{ env.NEXT_VERSION }}"
                   git ls-remote --tags origin  # Add this line to show remote tags in the log
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -58,6 +58,6 @@ jobs:
             - name: Create release on dev branch
               run: |
                   echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
-                  gh release create "${{ steps.next_version_dev.outputs.next_version }}-dev" --generate-notes --target dev
+                  gh release create "${{ env.NEXT_VERSION }}-dev" --generate-notes --target dev
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
