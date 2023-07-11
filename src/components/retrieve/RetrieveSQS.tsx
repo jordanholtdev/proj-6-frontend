@@ -1,117 +1,222 @@
 // component responsible for retrieving messages from SQS, processing them and updating application state
-// path: src/components/retrieve/RetrieveSQS.tsx
 import { useEffect, useState } from 'react';
 import { receiveSQSMessage } from '../../utils/sqs';
 import { Message } from './types';
+import { formatNumber } from '../../utils/helper';
 
 const RetrieveSQS = () => {
+    const [isLoading, setIsLoading] = useState(true);
     const [messages, setMessages] = useState<Message[] | null>(null);
 
-    useEffect(() => {
-        const fetchData = async () => {
+    const fetchData = async () => {
+        try {
             const receivedMessages = await receiveSQSMessage();
-            const parsedMessages = receivedMessages?.map(
-                (message) => JSON.parse(message) as Message
-            ) as Message[]; // Add a type assertion here
+            if (receivedMessages) {
+                const parsedMessages = receivedMessages
+                    .map((message) => {
+                        try {
+                            const parsedMessage = JSON.parse(
+                                message
+                            ) as Message;
+                            return parsedMessage;
+                        } catch (error) {
+                            console.log('Error parsing message:', error);
+                            return null;
+                        }
+                    })
+                    .filter((message) => message !== null) as Message[];
 
-            setMessages(parsedMessages);
-        };
+                setMessages((prevMessages) =>
+                    (prevMessages ?? []).concat(parsedMessages)
+                );
+            } else {
+                console.log('No messages received');
+            }
+        } catch (error) {
+            console.log('Error receiving messages:', error);
+        }
+    };
 
+    useEffect(() => {
         fetchData();
     }, []);
 
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            fetchData();
+        }, 5000);
+
+        return () => {
+            clearTimeout(timer); // Clear the timer on component unmount
+        };
+    }, [messages]);
+
+    useEffect(() => {
+        setIsLoading(false);
+    }, [messages]);
+
+    if (isLoading) {
+        return <div>Loading...</div>;
+    }
+
     return (
-        <div>
+        <div className='overflow-x-auto lg:overflow-visible'>
             <h1>Retrieve SQS Messages</h1>
-            <ul>
-                {messages?.map((message, index) => (
-                    <li key={index}>
-                        <h3>Label: {message.Labels[0].Name}</h3>
-                        <p>Confidence: {message.Labels[0].Confidence}</p>
-                        <ul>
-                            {message.Labels.map((label, labelIndex) => (
-                                <li key={labelIndex}>
-                                    <h4>Label: {label.Name}</h4>
-                                    <p>Confidence: {label.Confidence}</p>
-                                    <ul>
-                                        {label.Aliases.length > 0 && (
-                                            <li>
-                                                Aliases:{' '}
-                                                {label.Aliases.join(', ')}
-                                            </li>
-                                        )}
-                                        <li>
-                                            Categories:
-                                            <ul>
-                                                {label.Categories.map(
-                                                    (
-                                                        category,
-                                                        categoryIndex
-                                                    ) => (
-                                                        <li key={categoryIndex}>
-                                                            {category.Name}
-                                                        </li>
-                                                    )
-                                                )}
-                                            </ul>
-                                        </li>
-                                        {label.Instances.length > 0 && (
-                                            <li>
-                                                Instances:
-                                                <ul>
-                                                    {label.Instances.map(
-                                                        (
-                                                            instance,
-                                                            instanceIndex
-                                                        ) => (
-                                                            <li
-                                                                key={
-                                                                    instanceIndex
-                                                                }
-                                                            >
-                                                                BoundingBox:{' '}
-                                                                {JSON.stringify(
-                                                                    instance.BoundingBox
+            {messages && messages.length > 0 ? (
+                <table className='min-w-full divide-y divide-gray-200'>
+                    <thead>
+                        <tr>
+                            <th>Label</th>
+                            <th>Confidence</th>
+                            <th>Categories</th>
+                            {/* <th>Instances</th> */}
+                            <th>Parents</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {messages.map((message, index) => (
+                            <tr key={index}>
+                                <td>
+                                    {message.Labels ? (
+                                        <ul>
+                                            {message.Labels.map(
+                                                (label, labelIndex) => (
+                                                    <li key={labelIndex}>
+                                                        <h4 className='text-md'>
+                                                            {label.Name}
+                                                        </h4>
+                                                    </li>
+                                                )
+                                            )}
+                                        </ul>
+                                    ) : (
+                                        <p>No labels available</p>
+                                    )}
+                                </td>
+                                <td>
+                                    {message.Labels ? (
+                                        <ul>
+                                            {message.Labels.map(
+                                                (label, labelIndex) => (
+                                                    <li key={labelIndex}>
+                                                        <p>
+                                                            {formatNumber(
+                                                                label.Confidence
+                                                            )}
+                                                        </p>
+                                                    </li>
+                                                )
+                                            )}
+                                        </ul>
+                                    ) : null}
+                                </td>
+                                <td>
+                                    {message.Labels ? (
+                                        <ul>
+                                            {message.Labels.map(
+                                                (label, labelIndex) => (
+                                                    <li key={labelIndex}>
+                                                        {label.Categories
+                                                            .length > 0 ? (
+                                                            <ul>
+                                                                {label.Categories.map(
+                                                                    (
+                                                                        category,
+                                                                        categoryIndex
+                                                                    ) => (
+                                                                        <li
+                                                                            className='text-md'
+                                                                            key={
+                                                                                categoryIndex
+                                                                            }
+                                                                        >
+                                                                            {
+                                                                                category.Name
+                                                                            }
+                                                                        </li>
+                                                                    )
                                                                 )}
-                                                                <br />
-                                                                Confidence:{' '}
-                                                                {
-                                                                    instance.Confidence
-                                                                }
-                                                            </li>
-                                                        )
-                                                    )}
-                                                </ul>
-                                            </li>
-                                        )}
-                                        {label.Parents.length > 0 && (
-                                            <li>
-                                                Parents:
-                                                <ul>
-                                                    {label.Parents.map(
-                                                        (
-                                                            parent,
-                                                            parentIndex
-                                                        ) => (
-                                                            <li
-                                                                key={
-                                                                    parentIndex
-                                                                }
-                                                            >
-                                                                {parent.Name}
-                                                            </li>
-                                                        )
-                                                    )}
-                                                </ul>
-                                            </li>
-                                        )}
-                                    </ul>
-                                </li>
-                            ))}
-                        </ul>
-                    </li>
-                ))}
-            </ul>
+                                                            </ul>
+                                                        ) : null}
+                                                    </li>
+                                                )
+                                            )}
+                                        </ul>
+                                    ) : null}
+                                </td>
+                                {/* <td>
+                                    {message.Labels ? (
+                                        <ul>
+                                            {message.Labels.map(
+                                                (label, labelIndex) => (
+                                                    <li key={labelIndex}>
+                                                        {label.Instances
+                                                            .length > 0 ? (
+                                                            <ul>
+                                                                {label.Instances.map(
+                                                                    (
+                                                                        instance,
+                                                                        instanceIndex
+                                                                    ) => (
+                                                                        <li
+                                                                            key={
+                                                                                instanceIndex
+                                                                            }
+                                                                        >
+                                                                            {JSON.stringify(
+                                                                                instance.BoundingBox
+                                                                            )}
+                                                                        </li>
+                                                                    )
+                                                                )}
+                                                            </ul>
+                                                        ) : null}
+                                                    </li>
+                                                )
+                                            )}
+                                        </ul>
+                                    ) : null}
+                                </td> */}
+                                <td>
+                                    {message.Labels ? (
+                                        <ul>
+                                            {message.Labels.map(
+                                                (label, labelIndex) => (
+                                                    <li key={labelIndex}>
+                                                        {label.Parents.length >
+                                                        0 ? (
+                                                            <ul>
+                                                                {label.Parents.map(
+                                                                    (
+                                                                        parent,
+                                                                        parentIndex
+                                                                    ) => (
+                                                                        <li
+                                                                            key={
+                                                                                parentIndex
+                                                                            }
+                                                                        >
+                                                                            {
+                                                                                parent.Name
+                                                                            }
+                                                                        </li>
+                                                                    )
+                                                                )}
+                                                            </ul>
+                                                        ) : null}
+                                                    </li>
+                                                )
+                                            )}
+                                        </ul>
+                                    ) : null}
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            ) : (
+                <div>no messages</div>
+            )}
         </div>
     );
 };
