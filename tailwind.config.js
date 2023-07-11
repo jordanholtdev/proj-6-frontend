@@ -6,6 +6,11 @@ export default {
         container: {
             center: true,
         },
+        variants: {
+            extend: {
+                overflow: ['responsive', 'hover', 'focus'],
+            },
+        },
     },
     plugins: [require('@headlessui/react')],
 };
