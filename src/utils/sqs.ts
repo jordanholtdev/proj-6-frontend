@@ -2,10 +2,11 @@ import { SQS } from '@aws-sdk/client-sqs';
 
 const sqs = new SQS({
     region: import.meta.env.VITE_AWS_REGION,
-    credentials: {
-        accessKeyId: import.meta.env.VITE_AWS_ACCESS_KEY_ID,
-        secretAccessKey: import.meta.env.VITE_AWS_SECRET_ACCESS_KEY,
-    },
+    // only needed when running locally
+    // credentials: {
+    //     accessKeyId: import.meta.env.VITE_AWS_ACCESS_KEY_ID,
+    //     secretAccessKey: import.meta.env.VITE_AWS_SECRET_ACCESS_KEY,
+    // },
 });
 
 const sendSQSMessage = async (message: object) => {
