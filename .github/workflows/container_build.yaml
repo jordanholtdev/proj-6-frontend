@@ -1,0 +1,51 @@
+name: Build and push container image to ECR
+on:
+    push:
+        branches:
+            - main
+    workflow_dispatch:
+
+jobs:
+    deploy:
+        name: Build and push container image to ECR
+        runs-on: ubuntu-latest
+        permissions:
+            id-token: write
+            contents: read
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v2
+
+            - name: Configure AWS credentials
+              uses: aws-actions/configure-aws-credentials@v1
+              with:
+                  role-to-assume: ${{ secrets.AWS_ROLE }}
+                  role-session-name: ghsession
+                  aws-region: ${{ secrets.AWS_REGION }}
+
+            - name: Login to Amazon ECR
+              id: login-ecr
+              uses: aws-actions/amazon-ecr-login@v1
+
+            - name: Build and tag container image
+              id: build-image
+              env:
+                  ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+                  ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+                  IMAGE_TAG: ${{ github.sha }}
+              run: |
+                  docker build \
+                    --build-arg VITE_SUPABASE_URL=${{ secrets.VITE_SUPABASE_URL }} \
+                    --build-arg VITE_SUPABASE_ANON_KEY=${{ secrets.VITE_SUPABASE_ANON_KEY }} \
+                    -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
+                    .
+
+            - name: Push container image to Amazon ECR
+              id: push-image
+              env:
+                  ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+                  ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+                  IMAGE_TAG: ${{ github.sha }}
+              run: |
+                  docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG

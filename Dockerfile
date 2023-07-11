@@ -1,0 +1,39 @@
+# Build Stage
+
+FROM node:alpine as build-stage
+
+ARG VITE_USERPOOL_ID
+ARG VITE_CLIENT_ID
+ARG VITE_AWS_REGION
+ARG VITE_S3_BUCKET_NAME
+ARG VITE_SQS_QUEUE_URL
+ARG VITE_IMAGE_RESULTS_SQS_QUEUE_URL
+
+WORKDIR /app
+
+COPY package*.json ./
+
+RUN npm install
+
+COPY . .
+
+ENV VITE_USERPOOL_ID=$VITE_USERPOOL_ID
+ENV VITE_CLIENT_ID=$VITE_CLIENT_ID
+ENV VITE_AWS_REGION=$VITE_AWS_REGION
+ENV VITE_S3_BUCKET_NAME=$VITE_S3_BUCKET_NAME
+ENV VITE_SQS_QUEUE_URL=$VITE_SQS_QUEUE_URL
+ENV VITE_IMAGE_RESULTS_SQS_QUEUE_URL=$VITE_IMAGE_RESULTS_SQS_QUEUE_URL
+
+RUN npm run build
+
+# Production Stage
+
+FROM nginx:stable-alpine as production-stage
+
+COPY --from=build-stage /app/dist /usr/share/nginx/html
+
+COPY nginx.conf /etc/nginx/nginx.conf
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
