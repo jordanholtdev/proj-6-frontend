@@ -60,16 +60,16 @@ const RetrieveSQS = () => {
     }
 
     return (
-        <div>
+        <div className='overflow-x-auto lg:overflow-visible'>
             <h1>Retrieve SQS Messages</h1>
             {messages && messages.length > 0 ? (
-                <table className='border-collapse border border-gray-300'>
+                <table className='min-w-full divide-y divide-gray-200'>
                     <thead>
                         <tr>
                             <th>Label</th>
                             <th>Confidence</th>
                             <th>Categories</th>
-                            <th>Instances</th>
+                            {/* <th>Instances</th> */}
                             <th>Parents</th>
                         </tr>
                     </thead>
@@ -144,7 +144,7 @@ const RetrieveSQS = () => {
                                         </ul>
                                     ) : null}
                                 </td>
-                                <td>
+                                {/* <td>
                                     {message.Labels ? (
                                         <ul>
                                             {message.Labels.map(
@@ -176,7 +176,7 @@ const RetrieveSQS = () => {
                                             )}
                                         </ul>
                                     ) : null}
-                                </td>
+                                </td> */}
                                 <td>
                                     {message.Labels ? (
                                         <ul>
