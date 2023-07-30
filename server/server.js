@@ -1,10 +1,29 @@
 const express = require('express');
-const app = express();
+const helmet = require('helmet');
+const morgan = require('morgan');
+const cors = require('cors');
+require('dotenv').config();
+const multer = require('multer');
 const port = process.env.PORT || 3000; // Use environment variable for port if available
 
-app.get('/', (req, res) => {
+const uploadRoutes = require('./routes/uploadRoutes');
+
+// express app
+const app = express();
+
+// middleware
+app.use(helmet());
+app.use(morgan('common'));
+app.use(cors());
+app.use(multer().single('file')); // file handling middleware
+
+// routes
+app.get('/api', (req, res) => {
     res.send('Hello World!');
 });
+
+// upload route
+app.use('/api/upload', uploadRoutes);
 
 app.listen(port, () => {
     console.log(`Server listening at http://localhost:${port}`);
