@@ -73,11 +73,13 @@ const Upload = () => {
 
     const uploadToServer = async (
         file: File,
-        key: string
+        key: string,
+        userId: string
     ): Promise<AxiosResponse> => {
         const formData = new FormData();
         formData.append('file', file);
         formData.append('key', key);
+        formData.append('userId', userId);
 
         const response = await axios.post('/api/upload', formData, {
             headers: {
@@ -93,18 +95,13 @@ const Upload = () => {
         if (selectedFile) {
             try {
                 setLoading(true);
-                const response = await uploadToServer(selectedFile, s3Key);
+                const response = await uploadToServer(
+                    selectedFile,
+                    s3Key,
+                    userId
+                );
                 console.log(response);
-                // Handle success response, send message to SQS queue with s3Key and userId as message attributes and file name as message body
-                // const messageBody = {
-                //     bucket: 'images-bucket-project6',
-                //     key: s3Key,
-                //     userId: userId,
-                //     fileName: selectedFile.name,
-                // };
-                // console.log('message:', messageBody);
-                // const sqsResponse = await sendSQSMessage(messageBody);
-                // console.log('sqs', sqsResponse);
+
                 setSuccess(true);
             } catch (error) {
                 console.log(error);

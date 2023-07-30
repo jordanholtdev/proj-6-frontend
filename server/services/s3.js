@@ -18,6 +18,7 @@ const uploadToS3 = async (fileName, fileContent) => {
     try {
         const data = await s3.send(command);
         console.log('Success:', data);
+        return data;
     } catch (err) {
         console.log('Error:', err);
         throw new Error('Error uploading file to S3', err);
