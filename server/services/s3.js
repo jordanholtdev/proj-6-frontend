@@ -9,6 +9,7 @@ const s3 = new S3({
 });
 
 const uploadToS3 = async (fileName, fileContent) => {
+    console.log('Uploading file to S3');
     const command = new PutObjectCommand({
         Bucket: 'images-bucket-project6',
         Key: fileName,
@@ -17,7 +18,7 @@ const uploadToS3 = async (fileName, fileContent) => {
 
     try {
         const data = await s3.send(command);
-        console.log('Success:', data);
+        console.log('Successfully uploaded file to S3. File name:', fileName);
         return data;
     } catch (err) {
         console.log('Error:', err);

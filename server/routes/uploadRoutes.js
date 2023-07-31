@@ -4,12 +4,9 @@ const { uploadToS3 } = require('../services/s3');
 const { sendMessage } = require('../services/sqs');
 
 router.post('/', async (req, res) => {
-    console.log('req.file', req.file);
-    console.log('req.body', req.body);
     const file = req.file; // assuming you're using multer for file handling
 
     const user = req.body['userId'];
-    console.log('user', user);
 
     const message = {
         bucket: 'images-bucket-project6',
@@ -19,10 +16,13 @@ router.post('/', async (req, res) => {
 
     try {
         const s3Response = await uploadToS3(req.body['key'], file.buffer);
-        console.log('s3Response', s3Response);
+        console.log(
+            'Successfully uploaded file to S3',
+            s3Response.$metadata.httpStatusCode
+        );
         try {
             const sqsResponse = await sendMessage(message);
-            console.log('sqsResponse', sqsResponse);
+            console.log('Successfully sent SQS message', sqsResponse.MessageId);
 
             res.json({
                 message: 'File uploaded successfully queued for processing',

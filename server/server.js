@@ -17,6 +17,9 @@ app.use(morgan('common'));
 app.use(cors());
 app.use(multer().single('file')); // file handling middleware
 
+// turn off etag header
+app.set('etag', false); // turn off
+
 // routes
 app.get('/api', (req, res) => {
     res.send('Hello World!');
@@ -24,6 +27,9 @@ app.get('/api', (req, res) => {
 
 // upload route
 app.use('/api/upload', uploadRoutes);
+
+// retrieve route
+app.use('/api/retrieve', require('./routes/retrieveRoutes'));
 
 app.listen(port, () => {
     console.log(`Server listening at http://localhost:${port}`);

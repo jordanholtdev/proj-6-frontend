@@ -1,7 +1,6 @@
 import { ChangeEvent, FormEvent, useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios, { AxiosResponse } from 'axios';
-// import { sendSQSMessage } from '../../utils/sqs';
 import { generateS3Key, sanitizeFilename } from './utils';
 import { UploadState } from './types'; // Import the TypeScript types
 import { AuthContext } from '../auth/AuthProvider';
