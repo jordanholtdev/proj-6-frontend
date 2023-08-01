@@ -1,7 +1,6 @@
 import { ChangeEvent, FormEvent, useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { main } from '../../utils/s3';
-import { sendSQSMessage } from '../../utils/sqs';
+import axios, { AxiosResponse } from 'axios';
 import { generateS3Key, sanitizeFilename } from './utils';
 import { UploadState } from './types'; // Import the TypeScript types
 import { AuthContext } from '../auth/AuthProvider';
@@ -71,28 +70,37 @@ const Upload = () => {
         setSelectedFile(file);
     };
 
+    const uploadToServer = async (
+        file: File,
+        key: string,
+        userId: string
+    ): Promise<AxiosResponse> => {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('key', key);
+        formData.append('userId', userId);
+
+        const response = await axios.post('/api/upload', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+        return response.data;
+    };
+
     const handleSubmit = async (event: FormEvent) => {
         event.preventDefault();
 
         if (selectedFile) {
             try {
                 setLoading(true);
-                const response = await main(
-                    s3Key,
+                const response = await uploadToServer(
                     selectedFile,
-                    'images-bucket-project6'
+                    s3Key,
+                    userId
                 );
                 console.log(response);
-                // Handle success response, send message to SQS queue with s3Key and userId as message attributes and file name as message body
-                const messageBody = {
-                    bucket: 'images-bucket-project6',
-                    key: s3Key,
-                    userId: userId,
-                    fileName: selectedFile.name,
-                };
-                console.log('message:', messageBody);
-                const sqsResponse = await sendSQSMessage(messageBody);
-                console.log('sqs', sqsResponse);
+
                 setSuccess(true);
             } catch (error) {
                 console.log(error);
