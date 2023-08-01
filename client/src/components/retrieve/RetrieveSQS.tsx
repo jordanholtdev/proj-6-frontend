@@ -1,59 +1,29 @@
 // component responsible for retrieving messages from SQS, processing them and updating application state
 import { useEffect, useState } from 'react';
-import { receiveSQSMessage } from '../../utils/sqs';
 import { Message } from './types';
+import axios from 'axios';
 import { formatNumber } from '../../utils/helper';
 
 const RetrieveSQS = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [messages, setMessages] = useState<Message[] | null>(null);
 
-    const fetchData = async () => {
-        try {
-            const receivedMessages = await receiveSQSMessage();
-            if (receivedMessages) {
-                const parsedMessages = receivedMessages
-                    .map((message) => {
-                        try {
-                            const parsedMessage = JSON.parse(
-                                message
-                            ) as Message;
-                            return parsedMessage;
-                        } catch (error) {
-                            console.log('Error parsing message:', error);
-                            return null;
-                        }
-                    })
-                    .filter((message) => message !== null) as Message[];
-
-                setMessages((prevMessages) =>
-                    (prevMessages ?? []).concat(parsedMessages)
-                );
-            } else {
-                console.log('No messages received');
-            }
-        } catch (error) {
-            console.log('Error receiving messages:', error);
-        }
-    };
-
     useEffect(() => {
-        fetchData();
-    }, []);
+        setIsLoading(true);
+        // Call the endpoint every 5 seconds
+        const fetchMessages = async () => {
+            const response = await axios.get(
+                `/api/retrieve?userId=${'0d4f9d08-fb2b-48f5-b6f9-6f75810b3a1a'}`
+            );
+            const sqsMessages = response.data;
 
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            fetchData();
-        }, 5000);
-
-        return () => {
-            clearTimeout(timer); // Clear the timer on component unmount
+            console.log('messages', sqsMessages);
+            setMessages(sqsMessages.messages);
         };
-    }, [messages]);
 
-    useEffect(() => {
+        fetchMessages();
         setIsLoading(false);
-    }, [messages]);
+    }, []);
 
     if (isLoading) {
         return <div>Loading...</div>;

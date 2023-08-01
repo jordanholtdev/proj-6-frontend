@@ -4,6 +4,7 @@ import AuthLayout from '../components/layout/AuthLayout';
 import RetrieveSQS from '../components/retrieve/RetrieveSQS';
 
 const ImagesPage: React.FC = () => {
+    console.log('Rendering parent component');
     return (
         <MainLayout>
             <AuthLayout>
