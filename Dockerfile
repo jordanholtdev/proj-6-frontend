@@ -42,9 +42,6 @@ ENV SQS_QUEUE_URL=$SQS_QUEUE_URL
 ENV IMAGE_RESULTS_SQS_QUEUE_URL=$IMAGE_RESULTS_SQS_QUEUE_URL
 ENV AWS_REGION=$AWS_REGION
 
-RUN npm run build
-
-
 # Production Stage
 
 FROM nginx:stable-alpine as production-stage
