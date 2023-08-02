@@ -46,7 +46,7 @@ ENV AWS_REGION=$AWS_REGION
 
 FROM nginx:stable-alpine as production-stage
 
-COPY --from=build-stage /app/client/dist /usr/share/nginx/html
+COPY --from=build-stage-client /app/client/dist /usr/share/nginx/html
 COPY --from=build-stage-server /app/server /app/server
 
 COPY nginx.conf /etc/nginx/nginx.conf
