@@ -39,9 +39,10 @@ jobs:
                     --build-arg VITE_USERPOOL_ID=${{ secrets.VITE_USERPOOL_ID }} \
                     --build-arg VITE_CLIENT_ID=${{ secrets.VITE_CLIENT_ID }} \
                     --build-arg VITE_AWS_REGION=${{ secrets.VITE_AWS_REGION }} \
-                    --build-arg VITE_S3_BUCKET_NAME=${{ secrets.VITE_S3_BUCKET_NAME }} \
-                    --build-arg VITE_SQS_QUEUE_URL=${{ secrets.VITE_SQS_QUEUE_URL }} \
-                    --build-arg VITE_IMAGE_RESULTS_SQS_QUEUE_URL=${{ secrets.VITE_IMAGE_RESULTS_SQS_QUEUE_URL }} \
+                    --build-arg S3_BUCKET_NAME=${{ secrets.S3_BUCKET_NAME }} \
+                    --build-arg SQS_QUEUE_URL=${{ secrets.SQS_QUEUE_URL }} \
+                    --build-arg IMAGE_RESULTS_SQS_QUEUE_URL=${{ secrets.IMAGE_RESULTS_SQS_QUEUE_URL }} \
+                    --build-arg AWS_REGION=${{ secrets.AWS_REGION }} \
                     -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
                     .
 

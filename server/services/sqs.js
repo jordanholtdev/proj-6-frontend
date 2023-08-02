@@ -2,10 +2,10 @@ const { SQS } = require('@aws-sdk/client-sqs');
 
 const sqs = new SQS({
     region: process.env.AWS_REGION,
-    credetianls: {
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-    },
+    // credetianls: {
+    //     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    //     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    // },
 });
 
 const sendMessage = async (message) => {
@@ -48,8 +48,7 @@ const receiveMessage = async (userId) => {
     let isQueueEmpty = false;
 
     const params = {
-        QueueUrl:
-            'https://sqs.us-east-1.amazonaws.com/149256189456/image-processing-results-queue',
+        QueueUrl: process.env.IMAGE_RESULTS_SQS_QUEUE_URL,
         AttributeNames: ['SentTimestamp'],
         MaxNumberOfMessages: 10,
         MessageAttributeNames: ['All'],
