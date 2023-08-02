@@ -1,24 +1,32 @@
 // component responsible for retrieving messages from SQS, processing them and updating application state
 import { useEffect, useState } from 'react';
 import { Message } from './types';
-import axios from 'axios';
 import { formatNumber } from '../../utils/helper';
+import Pool from '../../utils/UserPool';
 
 const RetrieveSQS = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [messages, setMessages] = useState<Message[] | null>(null);
 
     useEffect(() => {
+        // get current user from Pool and determine userId to use in API call
+        const user = Pool.getCurrentUser();
+        const userId = user?.getUsername();
+
         setIsLoading(true);
         // Call the endpoint every 5 seconds
         const fetchMessages = async () => {
-            const response = await axios.get(
-                `/api/retrieve?userId=${'0d4f9d08-fb2b-48f5-b6f9-6f75810b3a1a'}`
-            );
-            const sqsMessages = response.data;
+            const response = await fetch(`/api/retrieve?userId=${userId}`);
 
-            console.log('messages', sqsMessages);
-            setMessages(sqsMessages.messages);
+            // Be sure to handle errors and check if the response is ok
+            if (!response.ok) {
+                console.error(`HTTP error! status: ${response.status}`);
+            } else {
+                const sqsMessages = await response.json();
+
+                console.log('messages', sqsMessages);
+                setMessages(sqsMessages.messages);
+            }
         };
 
         fetchMessages();
