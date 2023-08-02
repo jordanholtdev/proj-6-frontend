@@ -1,6 +1,5 @@
 import { ChangeEvent, FormEvent, useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios, { AxiosResponse } from 'axios';
 import { generateS3Key, sanitizeFilename } from './utils';
 import { UploadState } from './types'; // Import the TypeScript types
 import { AuthContext } from '../auth/AuthProvider';
@@ -74,18 +73,23 @@ const Upload = () => {
         file: File,
         key: string,
         userId: string
-    ): Promise<AxiosResponse> => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ): Promise<any> => {
         const formData = new FormData();
         formData.append('file', file);
         formData.append('key', key);
         formData.append('userId', userId);
 
-        const response = await axios.post('/api/upload', formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            },
+        const response = await fetch('/api/upload', {
+            method: 'POST',
+            body: formData,
         });
-        return response.data;
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        } else {
+            return await response.json();
+        }
     };
 
     const handleSubmit = async (event: FormEvent) => {
