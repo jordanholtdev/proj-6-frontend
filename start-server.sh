@@ -1,3 +1,3 @@
 #!/bin/sh
-node /app/server/app.js &
+node /app/server/server.js &
 exec nginx -g 'daemon off;'
