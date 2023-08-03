@@ -11,11 +11,19 @@ const uploadRoutes = require('./routes/uploadRoutes');
 // express app
 const app = express();
 
+// create a new instance of multer with fileSize limit
+const upload = multer({
+    limits: {
+        fileSize: 100 * 1024 * 1024, // Maximum file size is 100MB
+    },
+});
+
 // middleware
+
 app.use(helmet());
 app.use(morgan('common'));
 app.use(cors());
-app.use(multer().single('file')); // file handling middleware
+app.use(upload.single('file')); // file handling middleware with increased file size limit
 
 // turn off etag header
 app.set('etag', false); // turn off
